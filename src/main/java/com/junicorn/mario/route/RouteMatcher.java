@@ -21,7 +21,7 @@ public class RouteMatcher {
 	public RouteMatcher(List<Route> routes) {
 		this.routes = routes;
 	}
-
+	
 	public Route findRoute(String path) {
 		String cleanPath = parsePath(path);
 		List<Route> matchRoutes = new ArrayList<Route>();
@@ -63,76 +63,4 @@ public class RouteMatcher {
 		}
 	}
 
-
-	public boolean matchPath(Route route, String path) {
-		return matchPath(route.getPath(), path);
-	}
-
-	/**
-	 * 继续匹配
-	 * 
-	 * @param uri
-	 * @return
-	 */
-	private boolean matchPath(String path, String uri) {
-
-		// /hello
-		if (!path.endsWith("*")
-				&& ((uri.endsWith("/") && !path.endsWith("/")) || (path.endsWith("/") && !uri.endsWith("/")))) {
-			return false;
-		}
-
-		if (path.equals(uri)) {
-			return true;
-		}
-
-		// 检查参数
-		List<String> thisPathList = PathUtil.convertRouteToList(path);
-		List<String> uriList = PathUtil.convertRouteToList(uri);
-
-		int thisPathSize = thisPathList.size();
-		int uriSize = uriList.size();
-
-		if (thisPathSize == uriSize) {
-			for (int i = 0; i < thisPathSize; i++) {
-				String thisPathPart = thisPathList.get(i);
-				String pathPart = uriList.get(i);
-
-				if ((i == thisPathSize - 1) && (thisPathPart.equals("*") && path.endsWith("*"))) {
-					// 通配符匹配
-					return true;
-				}
-
-				if ((!thisPathPart.startsWith(":")) && !thisPathPart.equals(pathPart) && !thisPathPart.equals("*")) {
-					return false;
-				}
-			}
-			// 全部匹配
-			return true;
-		} else {
-			if (path.endsWith("*")) {
-				if (uriSize == (thisPathSize - 1) && (path.endsWith("/"))) {
-					uriList.add("");
-					uriList.add("");
-					uriSize += 2;
-				}
-
-				if (thisPathSize < uriSize) {
-					for (int i = 0; i < thisPathSize; i++) {
-						String thisPathPart = thisPathList.get(i);
-						String pathPart = uriList.get(i);
-						if (thisPathPart.equals("*") && (i == thisPathSize - 1) && path.endsWith("*")) {
-							return true;
-						}
-						if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)
-								&& !thisPathPart.equals("*")) {
-							return false;
-						}
-					}
-					return true;
-				}
-			}
-			return false;
-		}
-	}
 }
