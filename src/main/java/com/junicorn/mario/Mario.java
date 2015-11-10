@@ -1,17 +1,26 @@
 package com.junicorn.mario;
 
-import com.junicorn.mario.route.RouteMatcher;
 import com.junicorn.mario.route.Routers;
 
 public final class Mario {
 
-	private RouteMatcher routeMatcher;
-	
 	private Routers routers;
+	
+	private boolean init = false;
 	
 	private Mario() {
 	}
 	
+	public boolean isInit() {
+		return init;
+	}
+
+	public void setInit(boolean init) {
+		this.init = init;
+	}
+
+
+
 	private static class MarioHolder {
 		private static Mario ME = new Mario();
 	}
@@ -24,12 +33,9 @@ public final class Mario {
 		this.routers = routers;
 		return this;
 	}
-	
-	public RouteMatcher getRouteMatcher(){
-		if(null == this.routeMatcher){
-			this.routeMatcher = new RouteMatcher(routers.getRoutes());
-		}
-		return this.routeMatcher;
+
+	public Routers getRouters() {
+		return routers;
 	}
 	
 }

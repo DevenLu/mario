@@ -2,10 +2,12 @@ package com.junicorn.mario;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -14,17 +16,27 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.junicorn.mario.route.Route;
 import com.junicorn.mario.route.RouteMatcher;
+import com.junicorn.mario.route.Routers;
 import com.junicorn.mario.util.PathUtil;
 import com.junicorn.mario.util.ReflectUtil;
 
 public class MarioFilter implements Filter {
 	
-	private RouteMatcher routeMatcher;
+	private RouteMatcher routeMatcher = new RouteMatcher(new ArrayList<Route>());
+	
+	private ServletContext servletContext;
 	
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		Mario mario = Mario.me();
-		routeMatcher = mario.getRouteMatcher();
+		if(!mario.isInit()){
+			Routers routers = mario.getRouters();
+			if(null != routers){
+				routeMatcher.setRoutes(routers.getRoutes());
+			}
+			servletContext = filterConfig.getServletContext();
+			mario.setInit(true);
+		}
 	}
 	
 	@Override
@@ -47,6 +59,10 @@ public class MarioFilter implements Filter {
 	}
 	
 	private void handle(HttpServletRequest request, HttpServletResponse response, Route route){
+		
+		// 初始化上下文
+		MarioContext.initContext(servletContext, request, response);
+		
 		Object controller = route.getController();
 		// 要执行的路由方法
 		Method actionMethod = route.getAction();

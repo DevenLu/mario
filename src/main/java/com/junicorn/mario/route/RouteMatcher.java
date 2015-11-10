@@ -22,6 +22,10 @@ public class RouteMatcher {
 		this.routes = routes;
 	}
 	
+	public void setRoutes(List<Route> routes) {
+		this.routes = routes;
+	}
+
 	/**
 	 * 根据path查找路由
 	 * @param path	请求地址
