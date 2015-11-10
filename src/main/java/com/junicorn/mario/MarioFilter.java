@@ -23,9 +23,10 @@ public class MarioFilter implements Filter {
 	
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		
+		Mario mario = Mario.me();
+		routeMatcher = mario.getRouteMatcher();
 	}
-
+	
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;

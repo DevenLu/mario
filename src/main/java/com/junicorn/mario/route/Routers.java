@@ -31,5 +31,13 @@ public class Routers {
 		
 		routes.add(route);
 	}
+
+	public List<Route> getRoutes() {
+		return routes;
+	}
+
+	public void setRoutes(List<Route> routes) {
+		this.routes = routes;
+	}
 	
 }

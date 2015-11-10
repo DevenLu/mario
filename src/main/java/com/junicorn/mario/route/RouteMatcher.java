@@ -22,6 +22,11 @@ public class RouteMatcher {
 		this.routes = routes;
 	}
 	
+	/**
+	 * 根据path查找路由
+	 * @param path	请求地址
+	 * @return		返回查询到的路由
+	 */
 	public Route findRoute(String path) {
 		String cleanPath = parsePath(path);
 		List<Route> matchRoutes = new ArrayList<Route>();
@@ -47,7 +52,7 @@ public class RouteMatcher {
 			}
 		});
 	}
-
+	
 	private boolean matchesPath(String routePath, String pathToMatch) {
 		routePath = routePath.replaceAll(PathUtil.VAR_REGEXP, PathUtil.VAR_REPLACE);
 		return pathToMatch.matches("(?i)" + routePath);
