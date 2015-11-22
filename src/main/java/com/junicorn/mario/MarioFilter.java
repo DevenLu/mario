@@ -3,6 +3,7 @@ package com.junicorn.mario;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,10 +18,19 @@ import javax.servlet.http.HttpServletResponse;
 import com.junicorn.mario.route.Route;
 import com.junicorn.mario.route.RouteMatcher;
 import com.junicorn.mario.route.Routers;
+import com.junicorn.mario.servlet.wrapper.Request;
+import com.junicorn.mario.servlet.wrapper.Response;
 import com.junicorn.mario.util.PathUtil;
 import com.junicorn.mario.util.ReflectUtil;
 
+/**
+ * Mario MVC核心处理器
+ * @author biezhi
+ *
+ */
 public class MarioFilter implements Filter {
+	
+	private static final Logger LOGGER = Logger.getLogger(MarioFilter.class.getName());
 	
 	private RouteMatcher routeMatcher = new RouteMatcher(new ArrayList<Route>());
 	
@@ -30,13 +40,36 @@ public class MarioFilter implements Filter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		Mario mario = Mario.me();
 		if(!mario.isInit()){
+			
+			String className = filterConfig.getInitParameter("bootstrap");
+			Bootstrap bootstrap = this.getBootstrap(className);
+			bootstrap.init(mario);
+			
 			Routers routers = mario.getRouters();
 			if(null != routers){
 				routeMatcher.setRoutes(routers.getRoutes());
 			}
 			servletContext = filterConfig.getServletContext();
+			
 			mario.setInit(true);
 		}
+	}
+	
+	private Bootstrap getBootstrap(String className) {
+		if(null != className){
+			try {
+				Class<?> clazz = Class.forName(className);
+				Bootstrap bootstrap = (Bootstrap) clazz.newInstance();
+				return bootstrap;
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		throw new RuntimeException("init bootstrap class error!");
 	}
 	
 	@Override
@@ -46,6 +79,8 @@ public class MarioFilter implements Filter {
         
         // 请求的uri
         String uri = PathUtil.getRelativePath(request);
+        
+        LOGGER.info("Request URI：" + uri);
         
         Route route = routeMatcher.findRoute(uri);
         
@@ -58,9 +93,11 @@ public class MarioFilter implements Filter {
 		}
 	}
 	
-	private void handle(HttpServletRequest request, HttpServletResponse response, Route route){
+	private void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Route route){
 		
 		// 初始化上下文
+		Request request = new Request(httpServletRequest);
+		Response response = new Response(httpServletResponse);
 		MarioContext.initContext(servletContext, request, response);
 		
 		Object controller = route.getController();
@@ -73,17 +110,17 @@ public class MarioFilter implements Filter {
 	/**
 	 * 获取方法内的参数
 	 */
-	private Object[] getArgs(HttpServletRequest request, HttpServletResponse response, Class<?>[] params){
+	private Object[] getArgs(Request request, Response response, Class<?>[] params){
 		
 		int len = params.length;
 		Object[] args = new Object[len];
 		
 		for(int i=0; i<len; i++){
 			Class<?> paramTypeClazz = params[i];
-			if(paramTypeClazz.getName().equals(HttpServletRequest.class.getName())){
+			if(paramTypeClazz.getName().equals(Request.class.getName())){
 				args[i] = request;
 			}
-			if(paramTypeClazz.getName().equals(HttpServletResponse.class.getName())){
+			if(paramTypeClazz.getName().equals(Response.class.getName())){
 				args[i] = response;
 			}
 		}
@@ -94,7 +131,7 @@ public class MarioFilter implements Filter {
 	/**
 	 * 执行路由方法
 	 */
-	private Object executeMethod(Object object, Method method, HttpServletRequest request, HttpServletResponse response){
+	private Object executeMethod(Object object, Method method, Request request, Response response){
 		int len = method.getParameterTypes().length;
 		method.setAccessible(true);
 		if(len > 0){
