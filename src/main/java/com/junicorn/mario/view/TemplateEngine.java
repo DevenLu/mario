@@ -1,5 +1,5 @@
 package com.junicorn.mario.view;
 
-public interface TemplateEngin {
+public interface TemplateEngine {
 
 }
