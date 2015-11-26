@@ -48,7 +48,11 @@ public class ConfigLoader {
 	}
 	
 	public String getConf(String name){
-		return configMap.get(name).toString();
+		Object value = configMap.get(name);
+		if(null != value){
+			return value.toString();
+		}
+		return null;
 	}
 	
 	public void setConf(String name, String value){

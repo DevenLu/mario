@@ -25,7 +25,6 @@ public class JspRender implements Render {
 		
 		HttpServletRequest servletRequest = MarioContext.me().getRequest().getRaw();
 		HttpServletResponse servletResponse = MarioContext.me().getResponse().getRaw();
-		
 		try {
 			servletRequest.getRequestDispatcher(viewPath).forward(servletRequest, servletResponse);
 		} catch (ServletException e) {

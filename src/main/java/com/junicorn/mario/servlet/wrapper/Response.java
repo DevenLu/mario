@@ -18,19 +18,12 @@ public class Response {
 
 	private HttpServletResponse raw;
 	
-	private OutputStream outputStream;
-	
 	private Render render = null;
 	
 	public Response(HttpServletResponse httpServletResponse) {
 		this.raw = httpServletResponse;
-		try {
-			this.outputStream = httpServletResponse.getOutputStream();
-			raw.setHeader("Framework", "Mario");
-			this.render = Mario.me().getRender();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.raw.setHeader("Framework", "Mario");
+		this.render = Mario.me().getRender();
 	}
 	
 	public void text(String text) {
@@ -45,6 +38,7 @@ public class Response {
 	
 	private void print(String str){
 		try {
+			OutputStream outputStream = raw.getOutputStream();
 			outputStream.write(str.getBytes());
 			outputStream.flush();
 			outputStream.close();
@@ -61,11 +55,7 @@ public class Response {
 	public HttpServletResponse getRaw() {
 		return raw;
 	}
-
-	public OutputStream getOutputStream() {
-		return outputStream;
-	}
-
+	
 	public void render(String view) {
 		render.render(view, null);
 	}

@@ -28,7 +28,7 @@ public final class Const {
 	/**
 	 * 视图前缀
 	 */
-	public static final String VIEW_PREFIX = "/WEB-INF/jsp/";
+	public static final String VIEW_PREFIX = "/WEB-INF/";
 	
 	/**
 	 * 视图后缀
