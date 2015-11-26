@@ -51,6 +51,10 @@ public class ConfigLoader {
 		return configMap.get(name).toString();
 	}
 	
+	public void setConf(String name, String value){
+		configMap.put(name, value);
+	}
+	
 	public Object getObject(String name){
 		return configMap.get(name);
 	}

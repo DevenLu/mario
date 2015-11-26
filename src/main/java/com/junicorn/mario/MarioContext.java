@@ -20,6 +20,10 @@ public final class MarioContext {
 	private MarioContext() {
 	}
 	
+	public static MarioContext me(){
+		return CONTEXT.get();
+	}
+	
     public static void initContext(ServletContext context, Request request, Response response) {
     	MarioContext marioContext = new MarioContext();
     	marioContext.context = context;

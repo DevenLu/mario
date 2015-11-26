@@ -3,6 +3,8 @@ package com.junicorn.mario;
 import java.lang.reflect.Method;
 
 import com.junicorn.mario.config.ConfigLoader;
+import com.junicorn.mario.render.JspRender;
+import com.junicorn.mario.render.Render;
 import com.junicorn.mario.route.Routers;
 import com.junicorn.mario.servlet.wrapper.Request;
 import com.junicorn.mario.servlet.wrapper.Response;
@@ -29,9 +31,15 @@ public final class Mario {
 	 */
 	private boolean init = false;
 	
+	/**
+	 * 渲染器
+	 */
+	private Render render;
+	
 	private Mario() {
 		routers = new Routers();
 		configLoader = new ConfigLoader();
+		render = new JspRender();
 	}
 	
 	public boolean isInit() {
@@ -50,9 +58,14 @@ public final class Mario {
 		return MarioHolder.ME;
 	}
 	
-	public Mario addConf(String conf){
+	public Mario loadConf(String conf){
 		configLoader.load(conf);
 		return this;
+	}
+	
+	public Mario setConf(String name, String value){
+		configLoader.setConf(name, value);
+		return this;		 
 	}
 	
 	public String getConf(String name){
@@ -68,6 +81,13 @@ public final class Mario {
 		return routers;
 	}
 	
+	/**
+	 * 添加路由
+	 * @param path			映射的PATH
+	 * @param methodName	方法名称
+	 * @param controller	控制器对象
+	 * @return				返回Mario
+	 */
 	public Mario addRoute(String path, String methodName, Object controller){
 		try {
 			Method method = controller.getClass().getMethod(methodName, Request.class, Response.class);
@@ -78,6 +98,14 @@ public final class Mario {
 			e.printStackTrace();
 		}
 		return this;
+	}
+
+	public Render getRender() {
+		return render;
+	}
+
+	public void setRender(Render render) {
+		this.render = render;
 	}
 	
 }

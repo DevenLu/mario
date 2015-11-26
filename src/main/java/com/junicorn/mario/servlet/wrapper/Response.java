@@ -6,6 +6,9 @@ import java.io.OutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.junicorn.mario.Mario;
+import com.junicorn.mario.render.Render;
+
 /**
  * HttpServletResponse增强
  * @author biezhi
@@ -17,11 +20,14 @@ public class Response {
 	
 	private OutputStream outputStream;
 	
+	private Render render = null;
+	
 	public Response(HttpServletResponse httpServletResponse) {
 		this.raw = httpServletResponse;
 		try {
 			this.outputStream = httpServletResponse.getOutputStream();
 			raw.setHeader("Framework", "Mario");
+			this.render = Mario.me().getRender();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -58,6 +64,10 @@ public class Response {
 
 	public OutputStream getOutputStream() {
 		return outputStream;
+	}
+
+	public void render(String view) {
+		render.render(view, null);
 	}
 
 }
