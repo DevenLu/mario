@@ -60,4 +60,12 @@ public class Response {
 		render.render(view, null);
 	}
 
+	public void redirect(String location) {
+		try {
+			raw.sendRedirect(location);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
