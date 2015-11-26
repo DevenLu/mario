@@ -76,6 +76,8 @@ public class MarioFilter implements Filter {
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        request.setCharacterEncoding(Const.DEFAULT_CHAR_SET);
+        response.setCharacterEncoding(Const.DEFAULT_CHAR_SET);
         
         // 请求的uri
         String uri = PathUtil.getRelativePath(request);
