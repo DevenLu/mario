@@ -37,6 +37,14 @@ public class Request {
 		return raw.getParameter(name);
 	}
 	
+	public Integer queryAsInt(String name){
+		String val = query(name);
+		if(null != val && !val.equals("")){
+			return Integer.valueOf(val);
+		}
+		return null;
+	}
+	
 	public String cookie(String name){
 		Cookie[] cookies = raw.getCookies();
 		if(null != cookies && cookies.length > 0){

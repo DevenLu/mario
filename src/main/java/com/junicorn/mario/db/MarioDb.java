@@ -1,5 +1,6 @@
 package com.junicorn.mario.db;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +79,43 @@ public final class MarioDb {
 		return getMapList(sql, null);
 	}
 	
+	/**
+	 * 插入一条记录
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
+	public static int insert(String sql, Object ... params){
+		StringBuffer sqlBuf = new StringBuffer(sql);
+		sqlBuf.append(" values (");
+		
+		int start = sql.indexOf("(") + 1;
+		int end = sql.indexOf(")");
+		String a = sql.substring(start, end);
+		String[] fields = a.split(",");
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		int i=0;
+		for(String name : fields){
+			sqlBuf.append(":" + name.trim() + " ,");
+			map.put(name.trim(), params[i]);
+			i++;
+		}
+		
+		String newSql = sqlBuf.substring(0, sqlBuf.length() - 1) + ")";
+		
+		Connection con = sql2o.open();
+		Query query = con.createQuery(newSql);
+		
+		executeQuery(query, map);
+		
+		int res = query.executeUpdate().getResult();
+		
+		con.close();
+		
+		return res;
+	}
 	/**
 	 * 更新
 	 * @param sql
